@@ -18,7 +18,7 @@
   "module": "./dist/ele-form.mjs",
   "lint-staged": {
     "*.{vue,js,jsx,ts,tsx}": [
-      "eslint",
+      "eslint --fix",
       "prettier --write"
     ],
     "*.{css,less,scss,html,md}": [
