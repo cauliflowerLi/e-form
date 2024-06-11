@@ -4,59 +4,80 @@
       <el-col :span="24">
         <el-form
           ref="formRef"
-          :model="props.formData"
-          :rules="props.rules"
+          :model="formData"
+          :rules="rules"
           class="demo-dynamic"
-          :inline="props.inline"
-          :disabled="props.disabled"
-          :label-position="props.labelPosition"
-          :label-width="props.labelWidth"
+          :inline="inline"
+          :disabled="disabled"
+          :label-position="labelPosition"
+          :label-width="labelWidth"
         >
-          <el-form-item>
-            <el-button type="primary" @click="submitForm(formRef)">提交</el-button>
-            <el-button @click="resetForm(formRef)">重置</el-button>
-          </el-form-item>
+          <slot></slot>
+          <slot name="form-content">
+            <el-row :gutter="20">
+              <template v-for="(value, field) in Desc" :key="'component' + field">
+                <Component
+                  :is="value._type"
+                  v-if="!disabled && value.vif"
+                  :disabled="value.disabled"
+                  :value="formData[field]"
+                  :label="value.label"
+                  :field="field"
+                  v-bind="value"
+                />
+              </template>
+            </el-row>
+          </slot>
+          <slot name="form-footer"></slot>
         </el-form>
       </el-col>
     </el-row>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-interface Props {
-  formData: object
-  rules: object
-  disabled?: boolean
-  inline?: boolean
-  labelPosition?: string
-  labelWidth?: number | string
-}
-const props = withDefaults(defineProps<Props>(), {
-  formData: () => ({}),
-  rules: () => ({}),
-  disabled: false,
-  inline: false,
-  labelPosition: 'right',
-  labelWidth: '120px'
-})
-console.log(props)
-const formRef = ref()
-
-const submitForm = (formEl) => {
-  if (!formEl) return
-  formEl.validate((valid) => {
-    if (valid) {
-      console.log('submit!')
-    } else {
-      console.log('error submit!')
+<script>
+export default {
+  name: 'ele-form',
+  props: {
+    formData: {
+      type: Object,
+      default: () => ({})
+    },
+    rules: {
+      type: Object,
+      default: () => ({})
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    inline: {
+      type: Boolean,
+      default: false
+    },
+    labelPosition: {
+      type: String,
+      default: 'right'
+    },
+    labelWidth: {
+      type: String || Number,
+      default: '120px'
+    },
+    formDesc: {
+      type: Object,
+      default: () => ({})
     }
-  })
-}
-
-const resetForm = (formEl) => {
-  if (!formEl) return
-  formEl.resetFields()
+  },
+  computed: {
+    Desc: function () {
+      const desc = this.formDesc
+      Object.keys(desc).forEach((key) => {
+        let type = desc[key].type
+        desc[key]._type = 'ele-form-' + type
+      })
+      return desc
+    }
+  }
 }
 </script>
 

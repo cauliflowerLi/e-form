@@ -15,6 +15,8 @@ export default defineConfig({
     }
   },
   build: {
+    minify: false,
+    sourcemap: true,
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, 'lib/main.ts'),

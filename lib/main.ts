@@ -1,16 +1,20 @@
-import { VueInstance } from 'vue'
-import ShowComponent from './components/ShowComponent.vue'
+import EleFormInput from './components/EleFormInput.vue'
+import EleFormShow from './components/ShowComponent.vue'
 import FormComponent from './ele-form.vue'
 
 const nameToComponents = {
-  'show-form': ShowComponent,
-  'ele-form': FormComponent
+  EleFormShow,
+  EleFormInput,
+  FormComponent
 }
-const eleformComponent = {}
-eleformComponent.install = (app: VueInstance) => {
-  for (const name in nameToComponents) {
-    app.component(name, nameToComponents[name])
-  }
+interface eleform {
+  install: (app) => void
+}
+let eleformComponent: eleform
+eleformComponent.install = (app): void => {
+  Object.values(nameToComponents).forEach((component) => {
+    app.component(component.name, component)
+  })
 }
 
 export default eleformComponent
