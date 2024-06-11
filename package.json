@@ -31,7 +31,8 @@
     ]
   },
   "dependencies": {
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "element-plus": "^2.7.4"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

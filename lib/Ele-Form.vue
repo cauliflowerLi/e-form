@@ -42,7 +42,6 @@
 
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import { capitalizeFirstLetter } from './tool/tool'
 interface Props {
   formData: object
   rules: object
@@ -73,9 +72,9 @@ const desc = computed(() => {
   })
   return formDesc
 })
-console.log(desc.value)
 const setField = function (field, val) {
-  this.set(formData, field, val)
+  formData[field] = val
+  console.log(formData.value)
 }
 const submit = () => {
   console.log(formData)
