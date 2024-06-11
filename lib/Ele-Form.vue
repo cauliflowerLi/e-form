@@ -15,7 +15,7 @@
           <slot></slot>
           <slot name="form-content">
             <el-row :gutter="20">
-              <template v-for="(value, field) in Desc" :key="'component' + field">
+              <template v-for="(value, field) in desc" :key="'component' + field">
                 <Component
                   :is="value._type"
                   v-if="!disabled && value.vif"
@@ -40,60 +40,45 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ele-form',
-  props: {
-    formData: {
-      type: Object,
-      default: () => ({})
-    },
-    rules: {
-      type: Object,
-      default: () => ({})
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    inline: {
-      type: Boolean,
-      default: false
-    },
-    labelPosition: {
-      type: String,
-      default: 'right'
-    },
-    labelWidth: {
-      type: String || Number,
-      default: '120px'
-    },
-    formDesc: {
-      type: Object,
-      default: () => ({})
-    }
-  },
-  computed: {
-    Desc: function () {
-      const desc = this.formDesc
-      Object.keys(desc).forEach((key) => {
-        let type = desc[key].type
-        desc[key]._type = 'ele-form-' + type
-      })
-      return desc
-    }
-  },
-  methods: {
-    setField: function (field, val) {
-      this.set(this.formData, field, val)
-    },
-    submit() {
-      console.log(this.formData)
-    }
-  },
-  mounted() {
-    console.log(this)
-  }
+<script setup lang="ts">
+import { computed, reactive } from 'vue'
+import { capitalizeFirstLetter } from './tool/tool'
+interface Props {
+  formData: object
+  rules: object
+  formDesc: object
+  disabled?: boolean
+  inline?: boolean
+  labelPosition?: string
+  labelWidth?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  formData: () => ({}),
+  rules: () => ({}),
+  formDesc: () => ({}),
+  disabled: false,
+  inline: true,
+  labelPosition: 'right',
+  labelWidth: '120px'
+})
+
+const formData = reactive(props.formData)
+const rules = reactive(props.rules)
+const formDesc = reactive(props.formDesc)
+const desc = computed(() => {
+  Object.keys(formDesc).forEach((key) => {
+    let type = formDesc[key].type
+    formDesc[key]._type = 'ele-form-' + type
+  })
+  return formDesc
+})
+console.log(desc.value)
+const setField = function (field, val) {
+  this.set(formData, field, val)
+}
+const submit = () => {
+  console.log(formData)
 }
 </script>
 
