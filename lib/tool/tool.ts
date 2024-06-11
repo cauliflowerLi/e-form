@@ -1,4 +1,4 @@
-const capitalizeFirstLetter = function (str) {
+const capitalizeFirstLetter = function (str: string): string {
   if (typeof str !== 'string') {
     return str
   }

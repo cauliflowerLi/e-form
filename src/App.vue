@@ -3,7 +3,7 @@ import EleForm from '../lib/Ele-Form.vue'
 import { ref, reactive, computed } from 'vue'
 
 const formData = reactive({
-  email: '1247626136@qq.com'
+  email: '1137404046@qq.com'
 })
 const rules = reactive({
   email: [
@@ -110,7 +110,7 @@ const formDesc = computed(() => {
       :disabled="false"
       inline
       :labelWidth="120"
-      labelPosition="left"
+      labelPosition="right"
     >
       <span>我是默认插槽内容</span>
       <template #form-footer>

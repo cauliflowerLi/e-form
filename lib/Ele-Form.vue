@@ -13,7 +13,13 @@
           :label-width="labelWidth"
         >
           <slot></slot>
-          <slot name="form-content">
+          <ele-form-input>
+            <template #prefix>prefix</template>
+            <template #suffix>suffix</template>
+            <template #prepend>prepend</template>
+            <template #append>append</template>
+          </ele-form-input>
+          <!--          <slot name="form-content">
             <el-row :gutter="20">
               <template v-for="(value, field) in desc" :key="'component' + field">
                 <Component
@@ -28,7 +34,7 @@
                 />
               </template>
             </el-row>
-          </slot>
+          </slot>-->
           <slot name="form-footer"></slot>
           <slot name="btns">
             <el-button type="primary" @click="submit">保存</el-button>
@@ -42,16 +48,61 @@
 
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
+import type { FormInstance, FormRules } from 'element-plus'
+import EleFormInput from './components/Ele-Form-Input.vue'
+
+/**
+ * 单个表单字段描述项中的校验规则接口
+ */
+interface rulesOption {
+  required: boolean
+  message: string
+  trigger?: string
+  validator?: (rule: any, value: any, callback: any) => void
+}
+/**
+ * 单个表单字段描述项接口
+ */
+interface descOptionS {
+  type: string
+  label: string
+  rules: rulesOption[]
+  layout?: number
+  default?: number
+  vif?: boolean
+  disabled?: boolean
+}
+
+/**
+ * 所有表单项的描述接口
+ */
+interface descOptionB {
+  [key: string]: descOptionS
+}
+
+/**
+ * 表单所有字段value接口
+ */
+interface formDataOption {
+  [field: string]: any
+}
+
+/**
+ * 表单组件的props接口
+ */
 interface Props {
-  formData: object
-  rules: object
-  formDesc: object
+  formData: formDataOption
+  rules: FormRules
+  formDesc: descOptionB
   disabled?: boolean
   inline?: boolean
   labelPosition?: string
   labelWidth?: string
 }
 
+/**
+ * 表单组件props默认值
+ */
 const props = withDefaults(defineProps<Props>(), {
   formData: () => ({}),
   rules: () => ({}),
@@ -63,7 +114,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const formData = reactive(props.formData)
-const rules = reactive(props.rules)
+const rules = reactive<FormRules<typeof formData>>(props.rules)
 const formDesc = reactive(props.formDesc)
 const desc = computed(() => {
   Object.keys(formDesc).forEach((key) => {
@@ -72,12 +123,19 @@ const desc = computed(() => {
   })
   return formDesc
 })
-const setField = function (field, val) {
+const setField = (field, val) => {
   formData[field] = val
   console.log(formData.value)
 }
-const submit = () => {
-  console.log(formData)
+const submit = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate((valid) => {
+    if (valid) {
+      console.log('submit!')
+    } else {
+      console.log('error submit!')
+    }
+  })
 }
 </script>
 

@@ -1,13 +1,19 @@
 <template>
-  <el-input>
-    <slot name="prefix" />
-    <slot name="suffix" />
-    <slot name="prepend" />
-    <slot name="append" />
-  </el-input>
+  <el-form-item
+    :class="desc.class"
+    :style="desc.style"
+    :prop="field"
+    :label="label"
+    :rules="rule"
+    v-bind="$attrs"
+  >
+    <slot name="before" />
+    <slot><el-input v-model="newValue" @input="inputChange" v-bind="$attrs" /></slot>
+    <slot name="after" />
+  </el-form-item>
 </template>
 <script setup lang="ts">
-import { ref, useAttrs, useSlots } from 'vue'
+import { ref, useAttrs } from 'vue'
 defineOptions({
   inheritAttrs: false
 })
@@ -32,8 +38,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const newValue = ref(props.value)
 const $attrs = useAttrs()
-const slots = useSlots()
-console.log(slots)
 const inputChange = (field: string, value: any): void => {
   emit('input', field, value)
 }

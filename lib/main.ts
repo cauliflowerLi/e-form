@@ -1,3 +1,4 @@
+import { VueInstance } from 'vue'
 import EleFormInput from './components/Ele-Form-Input.vue'
 import EleFormShow from './components/Ele-Form-Show.vue'
 import FormComponent from './Ele-Form.vue'
@@ -8,7 +9,7 @@ const nameToComponents = {
   EleFormInput
 }
 interface eleform {
-  install: (app) => void
+  install: (app: VueInstance) => void
 }
 const eleformComponent: eleform = {
   install: (app): void => {
