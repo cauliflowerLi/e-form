@@ -55,7 +55,7 @@ export default {
   },
   method: {
     inputChange: (value) => {
-      this.$emits('input', props.value.field, value) // 更新父组件的 formData
+      this.$emits('input', field, value) // 更新父组件的 formData
     }
   }
 }

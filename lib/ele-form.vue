@@ -24,11 +24,16 @@
                   :label="value.label"
                   :field="field"
                   v-bind="value"
+                  @input="setField(field, $event)"
                 />
               </template>
             </el-row>
           </slot>
           <slot name="form-footer"></slot>
+          <slot name="btns">
+            <el-button type="primary" @click="submit">保存</el-button>
+            <el-button>重置</el-button>
+          </slot>
         </el-form>
       </el-col>
     </el-row>
@@ -77,6 +82,17 @@ export default {
       })
       return desc
     }
+  },
+  methods: {
+    setField: function (field, val) {
+      this.set(this.formData, field, val)
+    },
+    submit() {
+      console.log(this.formData)
+    }
+  },
+  mounted() {
+    console.log(this)
   }
 }
 </script>

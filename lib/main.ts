@@ -10,11 +10,12 @@ const nameToComponents = {
 interface eleform {
   install: (app) => void
 }
-let eleformComponent: eleform
-eleformComponent.install = (app): void => {
-  Object.values(nameToComponents).forEach((component) => {
-    app.component(component.name, component)
-  })
+const eleformComponent: eleform = {
+  install: (app): void => {
+    Object.values(nameToComponents).forEach((component) => {
+      app.component(component.name, component)
+    })
+  }
 }
 
 export default eleformComponent
