@@ -6,7 +6,7 @@
           ref="formRef"
           class="form"
           v-bind="$attrs"
-          :model="$props.formData"
+          :model="formData"
           :rules="$props.rules"
           :inline="$props.inline"
           :size="$props.size"
@@ -19,14 +19,14 @@
         >
           <slot></slot>
           <el-row :gutter="0">
-            <slot :formData="$props.formData" :formDesc="desc" :props="$props" name="form-content">
+            <slot :formData="formData" :formDesc="desc" :props="$props" name="form-content">
               <template v-for="(formItem, field) of desc">
                 <slot
-                  :data="$props.formData[field]"
+                  :data="formData[field]"
                   :desc="formItem"
                   :disabled="formItem.disabled"
                   :field="field"
-                  :formData="$props.formData"
+                  :formData="formData"
                   :name="field + '-wrapper'"
                   :options="formItem.options"
                   :props="$props"
@@ -41,11 +41,11 @@
                       :inline-message="false"
                     >
                       <slot
-                        :data="$props.formData[field]"
+                        :data="formData[field]"
                         :desc="formItem"
                         :disabled="formItem.disabled"
                         :field="field"
-                        :formData="$props.formData"
+                        :formData="formData"
                         :name="field"
                         :options="formItem.options"
                         :props="$props"
@@ -58,25 +58,23 @@
                           :desc="formItem"
                           :disabled="formItem.disabled"
                           :field="field"
-                          :formData="$props.formData"
+                          :model="formData"
                           :options="formItem.options"
                           :readonly="formItem.readonly"
-                          :value="$props.formData[field]"
+                          :value="formData[field]"
                           v-on="formItem.on"
                           @input="setField(field, $event)"
                         ></component>
                         <div v-else class="form-item-content">
                           <span
                             v-if="
-                              !$props.formData ||
-                              (!$props.formData[field] &&
-                                typeof $props.formData[field] !== 'number')
+                              !formData || (!formData[field] && typeof formData[field] !== 'number')
                             "
                           >
                             暂无
                           </span>
                           <span v-else>
-                            {{ $props.formData[field] }}
+                            {{ formData[field] }}
                           </span>
                         </div>
                       </slot>
@@ -173,18 +171,22 @@ interface btnOption {
 }
 
 const $emit = defineEmits([
-  'before-validate',
-  'before-request',
-  'request-success',
-  'request-error',
-  'request-end'
+  //'before-validate', //el-form保存前自定义校验函数：返回结果为boolean值：true校验通过，false校验失败
+  // 'before-request', //el-form保存前格式化接口参数的函数：返回结果为false不执行格式化，否则返回格式化的数据对象
+  // 'request', //①el-form接口调用无论成功还是失败以后的回调:成功或者失败的处理逻辑在外部request方法后续自定义
+  // 'requestFn', //②el-form正式保存的接口函数：成功或者失败的处理逻辑需要传入下述相关回调函数名接收数据即可②比①优先级高，即如果传入了②函数名则不会再执行①
+  // 'request-success', //el-form接口调用成功以后的回调，参数是成功后接口返回的值
+  // 'request-error', ////el-form接口调用失败以后的回调，参数是失败后接口返回的值
+  // 'request-end', //el-form接口调用无论成功还是失败以后的回调
+  'reset', //重置表单时需要对父组件进行的一些操作：表单的重置操作已经在按钮的重置方法里面完成了，这个重置只是对父组件的需要处理进行操作
+  'update:modelValue' //无需配置调用，v-model="formData"时自带的方法
 ])
 
 /**
  * 表单组件的props接口
  */
 interface Props {
-  formData: formDataOption //表单el-form的model
+  // formData: formDataOption //表单el-form的model
   rules: FormRules //表单el-form的rule
   formDesc: descOptionB //生成表单所有项的描述
   disabled?: boolean //是否禁用el-form
@@ -211,19 +213,18 @@ interface Props {
   requestError?: Function //el-form接口调用失败以后的回调，参数是失败后接口返回的值
   requestEnd?: Function //el-form接口调用无论成功还是失败以后的回调
 }
-
 /**
  * 表单组件props默认值
  */
 const props = withDefaults(defineProps<Props>(), {
-  formData: () => ({}),
+  // formData: () => ({}),
   rules: () => ({}),
   formDesc: () => ({}),
   disabled: false,
   inline: true,
   labelPosition: 'right',
   labelWidth: '120px',
-  size: 'small',
+  size: 'default',
   span: 24,
   isLoading: false,
   isDialog: false,
@@ -235,13 +236,16 @@ const props = withDefaults(defineProps<Props>(), {
   resetBtnText: '重置',
   btnSpan: 16,
   formBtns: () => [],
-  beforeValidate: (p?: object) => Promise,
-  beforeRequest: (p?: object) => Promise,
-  requestFn: (p?: object) => Promise,
-  requestSuccess: (p?: object) => Promise,
-  requestError: (p?: object) => Promise,
+  beforeValidate: (p: object) => Promise,
+  beforeRequest: (p: object) => Promise,
+  request: (p: object) => Promise,
+  requestFn: (p: object) => Promise,
+  requestSuccess: (p: object) => Promise,
+  requestError: (p: object) => Promise,
   requestEnd: () => Promise
 })
+const formData = defineModel()
+
 const formDesc = reactive(props.formDesc)
 const desc = computed(() => {
   Object.keys(formDesc).forEach((field) => {
@@ -424,13 +428,12 @@ const goBack = () => {
 }
 
 /**
- * 表单组件内部修改props的方法,任何组件都通过这个方法来改变自身对应的props的值
+ * 表单组件内部修改formData的方法,任何组件都通过这个方法来改变自身对应的formData的field的值
  * @param field
  * @param val
  */
 const setField = (field, val) => {
-  //props.formData[field] = val
-  console.log(field, val, props.formData)
+  formData.value[field] = val
 }
 /**
  * 重置表单
@@ -439,23 +442,22 @@ const resetForm = () => {
   formRef.value.resetFields()
   // 调用内部方法进行值的重置
   formRef.value.fields.forEach((field) => {
-    console.log(field)
-    //props.formData[field.prop] = field.initialValue
+    formData.value[field.prop] = field.initialValue
   })
-  //$emit('reset')
+  $emit('reset') //重置一些在父组件需要重置的操作，一般用不上
 }
 const handleSubmitForm = async () => {
   try {
     // ele-form组件调用的父页面中定义的校验函数：校验规则通过的话再继续执行提交
-    //$emit('before-validate', props.formData)
+    //$emit('before-validate', formData.value)
     if (props.beforeValidate) {
-      const isPass = await props.beforeValidate(props.formData)
+      const isPass = await props.beforeValidate(formData.value)
       if (isPass === false) return
     }
 
     await validate()
     // 为了不影响原值, 这里进行 clone
-    let data = cloneDeep(props.formData)
+    let data = cloneDeep(formData.value)
     // valueFormatter的处理：未实现
     for (const field in data) {
       const formItem = formDesc[field]

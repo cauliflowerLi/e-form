@@ -4,7 +4,9 @@ import { ref, reactive, computed } from 'vue'
 
 const formData = reactive({
   email: '',
-  phone: 15158112232
+  phone: 15158112232,
+  address: '',
+  test: ''
 })
 const rules = reactive({
   email: [
@@ -119,7 +121,6 @@ const disabled = ref(false)
 const switchState = () => {
   disabled.value = !disabled.value
 }
-// eslint-disable-next-line no-alert, no-console
 const formBtns = reactive([
   {
     type: 'primary',
@@ -157,24 +158,25 @@ const beforeValidate = async (params: object) => {
 const request = (result: object) => {
   console.log(result)
 }
+const reset = () => {
+  console.log('reset')
+}
 </script>
 
 <template>
   <main>
     <el-button v-if="false" @click="switchState">{{ disabled ? '禁用' : '启用' }}</el-button>
     <ele-form
-      :formData="formData"
+      v-model="formData"
       :formDesc="formDesc"
       :rules="rules"
       :disabled="disabled"
       inline
       :labelWidth="120"
       labelPosition="right"
-      :span="24"
       :btnSpan="16"
-      :request="request"
-      size="default"
-      :beforeValidate="beforeValidate"
+      @request="request"
+      @beforeValidate="beforeValidate"
     >
     </ele-form>
   </main>

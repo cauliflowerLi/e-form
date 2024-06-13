@@ -18,9 +18,9 @@ import { computed, ref, useAttrs } from 'vue'
 defineOptions({
   inheritAttrs: false
 })
-const emit = defineEmits(['input'])
+const emit = defineEmits(['input', 'update:modelValue'])
 interface Props {
-  value: string | number
+  //value: string | number
   desc: object
   formData: object
   options?: object
@@ -30,7 +30,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  value: '',
+  //value: '',
   desc: () => ({ class: 'test', style: { width: '200px' } }),
   formData: () => ({}),
   options: () => ({}),
@@ -38,9 +38,9 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   readonly: false
 })
-const newValue = ref(props.value)
+const newValue = defineModel()
+
 const $attrs = useAttrs()
-console.log(props.desc.style)
 const defaultAttrs = computed(() => {
   return {
     ...props.desc,
