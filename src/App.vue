@@ -3,7 +3,8 @@ import EleForm from '../lib/Ele-Form.vue'
 import { ref, reactive, computed } from 'vue'
 
 const formData = reactive({
-  email: '1137404046@qq.com'
+  email: '',
+  phone: 15158112232
 })
 const rules = reactive({
   email: [
@@ -21,25 +22,15 @@ const rules = reactive({
   phone: [
     {
       required: true,
-      message: 'Please input email address',
+      message: '请输入手机号码',
       trigger: 'blur'
-    },
-    {
-      type: 'email',
-      message: 'Please input correct email address',
-      trigger: ['blur', 'change']
     }
   ],
   address: [
     {
       required: true,
-      message: 'Please input email address',
+      message: '请输入地址',
       trigger: 'blur'
-    },
-    {
-      type: 'email',
-      message: 'Please input correct email address',
-      trigger: ['blur', 'change']
     }
   ]
 })
@@ -48,10 +39,17 @@ const formDesc = computed(() => {
     email: {
       type: 'input',
       label: '邮箱',
-      layout: 12,
+      layout: 8,
       default: 8,
       vif: true,
-      disabled: true,
+      disabled: false,
+      class: ['test'],
+      style: { width: '100%' },
+      on: {
+        click: () => {
+          console.log(2)
+        }
+      },
       rules: {
         required: true,
         trigger: 'blur',
@@ -61,10 +59,16 @@ const formDesc = computed(() => {
     phone: {
       type: 'input',
       label: '手机',
-      layout: 12,
+      layout: 8,
       default: 8,
       vif: true,
-      disabled: true,
+      style: { width: '100%' },
+      disabled: false,
+      on: {
+        click: () => {
+          console.log(2)
+        }
+      },
       rules: {
         required: true,
         trigger: 'blur',
@@ -74,10 +78,16 @@ const formDesc = computed(() => {
     address: {
       type: 'input',
       label: '地址',
-      layout: 12,
+      layout: 8,
       default: 8,
       vif: true,
-      disabled: true,
+      style: { width: '100%' },
+      disabled: false,
+      on: {
+        click: () => {
+          console.log(2)
+        }
+      },
       rules: {
         required: true,
         trigger: 'blur',
@@ -87,10 +97,16 @@ const formDesc = computed(() => {
     test: {
       type: 'show',
       label: '测试',
-      layout: 12,
+      layout: 16,
       default: 8,
       vif: true,
-      disabled: true,
+      style: { width: '100%' },
+      disabled: false,
+      on: {
+        click: () => {
+          console.log(2)
+        }
+      },
       rules: {
         required: true,
         trigger: 'blur',
@@ -99,23 +115,67 @@ const formDesc = computed(() => {
     }
   }
 })
+const disabled = ref(false)
+const switchState = () => {
+  disabled.value = !disabled.value
+}
+// eslint-disable-next-line no-alert, no-console
+const formBtns = reactive([
+  {
+    type: 'primary',
+    text: '自定义按钮',
+    click: () => {
+      console.log('测试事件')
+    }
+  },
+  {
+    type: 'success',
+    text: '自定义按钮',
+    click: () => {
+      console.log('测试事件')
+    }
+  },
+  {
+    type: 'info',
+    text: '自定义按钮',
+    click: () => {
+      console.log('测试事件')
+    }
+  },
+  {
+    type: 'danger',
+    text: '自定义按钮',
+    click: () => {
+      console.log('测试事件')
+    }
+  }
+])
+const beforeValidate = async (params: object) => {
+  console.log(params)
+  return true
+}
+const request = (result: object) => {
+  console.log(result)
+}
 </script>
 
 <template>
   <main>
+    <el-button v-if="false" @click="switchState">{{ disabled ? '禁用' : '启用' }}</el-button>
     <ele-form
       :formData="formData"
       :formDesc="formDesc"
       :rules="rules"
-      :disabled="false"
+      :disabled="disabled"
       inline
       :labelWidth="120"
       labelPosition="right"
+      :span="24"
+      :btnSpan="16"
+      :request="request"
+      size="default"
+      :beforeValidate="beforeValidate"
     >
-      <span>我是默认插槽内容</span>
-      <template #form-footer>
-        <span>我是页脚插槽内容</span>
-      </template>
     </ele-form>
   </main>
 </template>
@@ -127,24 +187,5 @@ header {
 
 .logo {
   display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
 }
 </style>

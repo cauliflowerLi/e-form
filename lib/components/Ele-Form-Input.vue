@@ -1,13 +1,20 @@
 <template>
-  <el-input>
-    <slot name="prefix" />
-    <slot name="suffix" />
-    <slot name="prepend" />
-    <slot name="append" />
+  <el-input
+    v-bind="defaultAttrs"
+    :class="props.desc.class"
+    :style="props.desc.style"
+    v-model.trim="newValue"
+    v-on="props.desc.on"
+    @input="handleChange"
+  >
+    <template v-if="$slots.prefix" #prefix><slot name="prefix" /></template>
+    <template v-if="$slots.suffix" #suffix><slot name="suffix" /></template>
+    <template v-if="$slots.prepend" #prepend><slot name="prepend" /></template>
+    <template v-if="$slots.append" #append><slot name="append" /></template>
   </el-input>
 </template>
 <script setup lang="ts">
-import { ref, useAttrs, useSlots } from 'vue'
+import { computed, ref, useAttrs } from 'vue'
 defineOptions({
   inheritAttrs: false
 })
@@ -15,41 +22,44 @@ const emit = defineEmits(['input'])
 interface Props {
   value: string | number
   desc: object
-  rule: object
+  formData: object
+  options?: object
   field: string
-  label: string
   disabled?: boolean
+  readonly?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   value: '',
-  desc: () => ({ class: '', style: {} }),
-  rule: () => ({}),
+  desc: () => ({ class: 'test', style: { width: '200px' } }),
+  formData: () => ({}),
+  options: () => ({}),
   field: '',
-  label: '',
-  disabled: false
+  disabled: false,
+  readonly: false
 })
-
 const newValue = ref(props.value)
 const $attrs = useAttrs()
-const slots = useSlots()
-console.log(slots)
-const inputChange = (field: string, value: any): void => {
-  emit('input', field, value)
+console.log(props.desc.style)
+const defaultAttrs = computed(() => {
+  return {
+    ...props.desc,
+    ...$attrs,
+    // placeholder: this.t('ele-form.input') + props.desc.label
+    placeholder: '请输入' + props.desc.label
+  }
+})
+const handleChange = (field: string, val: any): void => {
+  if (props.desc.toUpperCase) {
+    val = val.toUpperCase()
+  }
+  if ($attrs.isSearchForm) {
+    return
+  }
+  if ($attrs.type === 'number' && val) {
+    val = Number(val)
+  }
+  emit('input', field, val)
 }
 </script>
-<style lang="scss" scoped>
-.formitme {
-  display: flex;
-}
-</style>
-<style lang="scss">
-.el-form {
-  .el-form-item__content {
-    display: flex;
-  }
-  .el-input {
-    flex: 1;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

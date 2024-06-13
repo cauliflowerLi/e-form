@@ -12,7 +12,7 @@ interface eleform {
   install: (app: VueInstance) => void
 }
 const eleformComponent: eleform = {
-  install: (app): void => {
+  install: (app: VueInstance): void => {
     Object.values(nameToComponents).forEach((component) => {
       const name = component.__name && component.__name.toLowerCase()
       name && app.component(name, component)

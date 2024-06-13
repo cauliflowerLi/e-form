@@ -8,10 +8,12 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ele-form-show'
-}
+<script setup lang="ts">
+console.log('ele-form-show')
 </script>
 
-<style></style>
+<style lang="scss">
+.show-wrapper {
+  width: 100%;
+}
+</style>

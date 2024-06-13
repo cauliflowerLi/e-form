@@ -31,8 +31,10 @@
     ]
   },
   "dependencies": {
+    "element-plus": "^2.7.4",
+    "lodash-es": "^4.17.21",
     "vue": "^3.4.21",
-    "element-plus": "^2.7.4"
+    "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
