@@ -111,10 +111,10 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { is } from './tool/tool'
 import { cloneDeep } from 'lodash-es'
-import { useRoute } from 'vue-router'
+//import { useRoute } from 'vue-router'
 import type { FormRules } from 'element-plus'
 
-const route = useRoute()
+// const route = useRoute()
 /**
  * 单个表单字段描述项中的校验规则接口
  */
@@ -179,7 +179,8 @@ const $emit = defineEmits([
   // 'request-error', ////el-form接口调用失败以后的回调，参数是失败后接口返回的值
   // 'request-end', //el-form接口调用无论成功还是失败以后的回调
   'reset', //重置表单时需要对父组件进行的一些操作：表单的重置操作已经在按钮的重置方法里面完成了，这个重置只是对父组件的需要处理进行操作
-  'update:modelValue' //无需配置调用，v-model="formData"时自带的方法
+  'update:modelValue', //无需配置调用，v-model="formData"时自带的方法
+  'back' //返回按钮触发事件时，父页面需要执行的操作
 ])
 
 /**
@@ -192,7 +193,7 @@ interface Props {
   disabled?: boolean //是否禁用el-form
   inline?: boolean //是否inline显示el-form
   labelPosition?: string //el-form的label显示位置：默认right
-  labelWidth?: string //el-form的label占据的css宽度：默认120px
+  labelWidth?: string | number //el-form的label占据的css宽度：默认120px
   size?: string //el-form的size
   span?: number //el-form最直接的el-col的span占据：用来控制整体表单内容的span宽度
   btnSpan?: number //自定义按钮组的el-col的span宽度
@@ -201,7 +202,7 @@ interface Props {
   isLoading?: boolean //保存时加载中状态：默认false;还未实现
   isShowBackBtn?: boolean //是否显示返回按钮：默认不显示
   isShowResetBtn?: boolean //是否显示重置按钮：默认显示
-  resetBtnText: string //重置按钮的文本内容：默认重置
+  resetBtnText?: string //重置按钮的文本内容：默认重置
   isDialog?: boolean //当前el-form是否是dialog的形式：还未实现
   backBtnText?: string //返回按钮的默认文本：默认返回
   formBtns?: btnOption[] //自定义按钮组，每项含参见接口。如果开启了保存和返回等按钮配置项，则该选项中无需再有。他们之间是合并的关系而不是覆盖
@@ -418,13 +419,13 @@ const getColAttrs = (layout) => {
 // 返回按钮
 const goBack = () => {
   $emit('back')
-  if (route) {
+  /*if (route) {
     // vue-router
     route.back()
   } else {
     // 浏览器history API
     history.back()
-  }
+  }*/
 }
 
 /**

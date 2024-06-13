@@ -20,9 +20,7 @@ defineOptions({
 })
 const emit = defineEmits(['input', 'update:modelValue'])
 interface Props {
-  //value: string | number
   desc: object
-  formData: object
   options?: object
   field: string
   disabled?: boolean
@@ -30,9 +28,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  //value: '',
   desc: () => ({ class: 'test', style: { width: '200px' } }),
-  formData: () => ({}),
   options: () => ({}),
   field: '',
   disabled: false,
@@ -42,11 +38,14 @@ const newValue = defineModel()
 
 const $attrs = useAttrs()
 const defaultAttrs = computed(() => {
+  const desc = { ...props.desc }
+  desc['aria-label'] = desc.label
+  delete desc.label
   return {
-    ...props.desc,
+    ...desc,
     ...$attrs,
     // placeholder: this.t('ele-form.input') + props.desc.label
-    placeholder: '请输入' + props.desc.label
+    placeholder: '请输入' + desc['aria-label']
   }
 })
 const handleChange = (field: string, val: any): void => {
